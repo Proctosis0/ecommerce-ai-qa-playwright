@@ -6,8 +6,12 @@ on:
     branches: [ main, master ]
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: ubuntu-24.04
+    # Imagen oficial de Playwright: trae Chromium, Firefox y WebKit con todas
+    # sus dependencias del sistema (evita apt-get en el runner).
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
     env:
       # Credenciales para tests con variables de entorno (.env no se versiona).
       # Si defines los secrets en el repo, se usan esos; si no, valores publicos de la demo.
@@ -15,14 +19,10 @@ jobs:
       LOCKED_PASSWORD: ${{ secrets.LOCKED_PASSWORD || 'secret_sauce' }}
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      timeout-minutes: 20
-      run: npx playwright install --with-deps chromium firefox webkit msedge
+    - name: Install Microsoft Edge
+      run: npx playwright install msedge
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4
