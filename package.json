@@ -23,6 +23,7 @@
     "@types/node": "^26.6.6"
   },
   "dependencies": {
-    "@playwright/mcp": "^0.0.85"
+    "@playwright/mcp": "^0.0.85",
+    "dotenv": "^18.0.10"
   }
 }

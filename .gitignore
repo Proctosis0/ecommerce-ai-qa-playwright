@@ -10,3 +10,6 @@ node_modules/
 # MCP config (contains secrets)
 .mcp.json
 .playwright-mcp/
+
+# Variables de entorno (credenciales locales)
+.env
