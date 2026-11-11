@@ -6,9 +6,9 @@
 
 ## At a glance
 
-| Test cases designed | Automated tests | Passing | Defects found | Unexpected failures | Jira stories |
+| Test cases designed | Automated tests | Passing | Defects found | Unexpected failures | Jira epics / stories |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| 33 | 30 | 22 | 8 (4 High) | 0 | 4 |
+| 33 | 30 | 22 | 8 (4 High) | 0 | 2 / 7 |
 
 End-to-end and API test automation for the [SauceDemo](https://www.saucedemo.com) store, built with **Playwright + TypeScript** and an **AI-assisted workflow that connects Jira, Playwright and GitHub**.
 
@@ -23,7 +23,7 @@ A user story is read from Jira, an AI agent turns it into a Playwright test usin
 - **Data-driven tests**: checkout form validations run from a table of cases in `data/test-data.ts`.
 - **8 defects found and documented** (store + APIs), each with a GitHub Issue (steps, evidence, severity, priority) and a failing-by-design test (see [Defects found](#defects-found)).
 - **Full QA cycle documented**: [test plan](docs/test-plan.md) → test cases → execution → [summary report with go/no-go recommendation](docs/test-summary-report.md).
-- **Traceability**: every Jira story is linked to its test cases, spec and result in the [traceability matrix](docs/traceability-matrix.md).
+- **Traceability like a real team**: Jira epics → stories with acceptance criteria → test cases; defects as Jira *Bug* items linked to their story. Every test carries its Jira key as a Playwright tag (`@SCRUM-n`), so any story can be re-tested on its own. Details in the [traceability matrix](docs/traceability-matrix.md).
 - **Login once, reuse the session** (`storageState` + setup project) so flow tests start already logged in.
 - **CI on every push** with GitHub Actions; the HTML report is published to **GitHub Pages**.
 - Centralized test data, credentials from environment variables, `data-test` based selectors.
@@ -143,6 +143,7 @@ npm test
 | `npm run test:api` | API tests only |
 | `npm run test:login` / `test:productos` / `test:carrito` / `test:checkout` | One feature area |
 | `npm run test:bugs` | Documented defects only |
+| `npx playwright test --grep "@SCRUM-6"` | All tests of one Jira story (use the story key) |
 | `npm run test:headed` | Run with a visible browser |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run report` | Open the last HTML report |

@@ -35,7 +35,7 @@ const test = base.extend<{ api: BookingApi; token: string; nuevaReserva: (datos?
   },
 });
 
-test.describe('API Restful-Booker: autenticacion', () => {
+test.describe('API Restful-Booker: autenticacion', { tag: '@SCRUM-12' }, () => {
   test('POST /auth con credenciales validas devuelve un token', async ({ api }) => {
     const res = await api.createToken(config.admin.username, config.admin.password);
 
@@ -44,7 +44,7 @@ test.describe('API Restful-Booker: autenticacion', () => {
     expect(authResponseSchema.safeParse(body).success, 'La respuesta debe cumplir el contrato { token }').toBe(true);
   });
 
-  test('BUG-05: POST /auth con credenciales invalidas debe responder 401', async ({ api }) => {
+  test('BUG-05: POST /auth con credenciales invalidas debe responder 401', { tag: ['@bug', '@SCRUM-17'] }, async ({ api }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',
@@ -57,7 +57,7 @@ test.describe('API Restful-Booker: autenticacion', () => {
   });
 });
 
-test.describe('API Restful-Booker: CRUD de reservas', () => {
+test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () => {
   test('POST /booking crea una reserva y cumple el contrato', async ({ api, token }) => {
     const res = await api.create(reservaValida);
 
@@ -126,7 +126,7 @@ test.describe('API Restful-Booker: CRUD de reservas', () => {
   });
 });
 
-test.describe('API Restful-Booker: permisos', () => {
+test.describe('API Restful-Booker: permisos', { tag: '@SCRUM-12' }, () => {
   test('PUT sin token es rechazado con 403', async ({ api, nuevaReserva }) => {
     const id = await nuevaReserva();
 
@@ -146,8 +146,8 @@ test.describe('API Restful-Booker: permisos', () => {
   });
 });
 
-test.describe('API Restful-Booker: defectos de validacion', () => {
-  test('BUG-06: crear una reserva sin campos obligatorios debe responder 400', async ({ api }) => {
+test.describe('API Restful-Booker: defectos de validacion', { tag: '@SCRUM-12' }, () => {
+  test('BUG-06: crear una reserva sin campos obligatorios debe responder 400', { tag: ['@bug', '@SCRUM-18'] }, async ({ api }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',
@@ -159,7 +159,7 @@ test.describe('API Restful-Booker: defectos de validacion', () => {
     expect(res.status(), 'Datos incompletos deben responder 400 Bad Request').toBe(400);
   });
 
-  test('BUG-07: no debe aceptar precio negativo ni salida anterior a la entrada', async ({ api, token }) => {
+  test('BUG-07: no debe aceptar precio negativo ni salida anterior a la entrada', { tag: ['@bug', '@SCRUM-19'] }, async ({ api, token }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',
@@ -177,7 +177,7 @@ test.describe('API Restful-Booker: defectos de validacion', () => {
     expect(res.status(), 'Una reserva invalida debe ser rechazada con 400').toBe(400);
   });
 
-  test('BUG-08: DELETE exitoso debe responder 200 o 204, no 201', async ({ api, token }) => {
+  test('BUG-08: DELETE exitoso debe responder 200 o 204, no 201', { tag: ['@bug', '@SCRUM-20'] }, async ({ api, token }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',

@@ -3,7 +3,7 @@ import { productos, urls } from '../../data/test-data';
 
 const { backpack } = productos;
 
-test.describe('Carrito en Saucedemo', () => {
+test.describe('Carrito en Saucedemo', { tag: '@SCRUM-10' }, () => {
   test('Agregar Sauce Labs Backpack y verificar nombre, precio y cantidad en el carrito', async ({
     page,
     productsPage,

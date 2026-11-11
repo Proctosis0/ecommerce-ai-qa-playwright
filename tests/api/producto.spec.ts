@@ -2,7 +2,7 @@ import { test, expect } from '../fixtures';
 import { productos } from '../../data/test-data';
 import { getPrecio } from './productoApi';
 
-test.describe('API de productos', () => {
+test.describe('API de productos', { tag: '@SCRUM-11' }, () => {
   test('devuelve el precio de Sauce Labs Backpack', async ({ request }) => {
     const respuesta = await getPrecio(request, productos.backpack.nombre);
 
@@ -14,7 +14,7 @@ test.describe('API de productos', () => {
     expect(cuerpo.precio, 'El precio del producto debe ser 29.99').toBe(productos.backpack.precio);
   });
 
-  test('devuelve error para un producto inexistente', async ({ request }) => {
+  test('devuelve error para un producto inexistente', { tag: ['@bug', '@SCRUM-16'] }, async ({ request }) => {
     test.fail(true, 'Bug: la API responde 200 con {"precio":0} para un producto inexistente');
     test.info().annotations.push({
       type: 'bug',

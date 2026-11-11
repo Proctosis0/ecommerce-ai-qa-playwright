@@ -3,7 +3,7 @@ import { usuarios } from '../../data/test-data';
 
 const MENSAJE_BLOQUEO = 'Epic sadface: Sorry, this user has been locked out.';
 
-test.describe('Login de usuario bloqueado', () => {
+test.describe('Login de usuario bloqueado', { tag: '@SCRUM-1' }, () => {
   test('locked_out_user no puede iniciar sesion y ve el mensaje de bloqueo', async ({ page, loginPage }) => {
     await loginPage.loginAs(usuarios.locked);
 

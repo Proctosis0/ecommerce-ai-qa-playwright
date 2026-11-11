@@ -4,7 +4,7 @@ import { getPrecio } from '../api/productoApi';
 
 const { backpack } = productos;
 
-test.describe('Compra completa en Saucedemo', () => {
+test.describe('Compra completa en Saucedemo', { tag: '@SCRUM-11' }, () => {
   test('Flujo E2E: login, producto, carrito, precio por API y logout', async ({
     page,
     request,

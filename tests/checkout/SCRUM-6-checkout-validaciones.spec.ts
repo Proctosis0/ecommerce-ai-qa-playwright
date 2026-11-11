@@ -4,7 +4,7 @@ import { checkoutInvalido, checkoutValido, productos, resumenBackpack, urls } fr
 
 const { backpack } = productos;
 
-test.describe('SCRUM-6: Checkout - validaciones del formulario y compra completa', () => {
+test.describe('SCRUM-6: Checkout - validaciones del formulario y compra completa', { tag: '@SCRUM-6' }, () => {
   // La sesion de standard_user se reutiliza (storageState): cada test arranca en el inventario
   // con el Backpack en el carrito y entra a la pantalla de datos del comprador.
   test.beforeEach(async ({ page, productsPage, cartPage }) => {

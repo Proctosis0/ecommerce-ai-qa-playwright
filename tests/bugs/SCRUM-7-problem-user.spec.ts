@@ -9,13 +9,13 @@ import { checkoutValido, productos, urls, usuarios } from '../../data/test-data'
  * exista, y el reporte muestra cada bug documentado. Si un bug se corrige, el test pasa a
  * "unexpectedly passed" y avisa que hay que quitar la marca.
  */
-test.describe('SCRUM-7: Defectos detectados con problem_user', () => {
+test.describe('SCRUM-7: Defectos detectados con problem_user', { tag: '@SCRUM-7' }, () => {
   test.beforeEach(async ({ page, loginPage }) => {
     await loginPage.loginAs(usuarios.problem);
     await expect(page, 'problem_user debe poder iniciar sesion').toHaveURL((url) => url.pathname === urls.inventory);
   });
 
-  test('BUG-01: cada producto debe mostrar su propia imagen', async ({ productsPage }) => {
+  test('BUG-01: cada producto debe mostrar su propia imagen', { tag: ['@bug', '@SCRUM-13'] }, async ({ productsPage }) => {
     test.fail(true, 'Bug conocido de problem_user');
     test.info().annotations.push({
       type: 'bug',
@@ -28,7 +28,7 @@ test.describe('SCRUM-7: Defectos detectados con problem_user', () => {
     expect(new Set(imagenes).size, 'Cada producto debe tener una imagen distinta').toBe(cantidadProductos);
   });
 
-  test('BUG-02: ordenar por precio (menor a mayor) debe ordenar el listado', async ({ productsPage }) => {
+  test('BUG-02: ordenar por precio (menor a mayor) debe ordenar el listado', { tag: ['@bug', '@SCRUM-14'] }, async ({ productsPage }) => {
     test.fail(true, 'Bug conocido de problem_user');
     test.info().annotations.push({
       type: 'bug',
@@ -42,7 +42,7 @@ test.describe('SCRUM-7: Defectos detectados con problem_user', () => {
     expect(precios, 'Los precios deben quedar ordenados de menor a mayor').toEqual(esperados);
   });
 
-  test('BUG-03: el apellido ingresado en el checkout debe quedar en su campo', async ({
+  test('BUG-03: el apellido ingresado en el checkout debe quedar en su campo', { tag: ['@bug', '@SCRUM-15'] }, async ({
     page,
     productsPage,
     checkoutPage,

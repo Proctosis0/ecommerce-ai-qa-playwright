@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures';
 import { urls, usuarios } from '../../data/test-data';
 
-test.describe('Login en Saucedemo', () => {
+test.describe('Login en Saucedemo', { tag: '@SCRUM-1' }, () => {
   test('Login exitoso con standard_user y acceso al inventario', async ({ page, loginPage, productsPage }) => {
     await loginPage.loginAs(usuarios.standard);
 

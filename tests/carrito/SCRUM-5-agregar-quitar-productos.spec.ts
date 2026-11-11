@@ -7,7 +7,7 @@ const { backpack, bikeLight } = productos;
 const BOTON_AGREGAR = 'Add to cart';
 const BOTON_QUITAR = 'Remove';
 
-test.describe('SCRUM-5: Agregar y quitar productos del carrito', () => {
+test.describe('SCRUM-5: Agregar y quitar productos del carrito', { tag: '@SCRUM-5' }, () => {
   test('agrega dos productos, valida el contador y los quita desde carrito y productos', async ({
     page,
     productsPage,
