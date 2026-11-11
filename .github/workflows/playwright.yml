@@ -8,6 +8,11 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-24.04
+    env:
+      # Credenciales para tests con variables de entorno (.env no se versiona).
+      # Si defines los secrets en el repo, se usan esos; si no, valores publicos de la demo.
+      LOCKED_USER: ${{ secrets.LOCKED_USER || 'locked_out_user' }}
+      LOCKED_PASSWORD: ${{ secrets.LOCKED_PASSWORD || 'secret_sauce' }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -17,7 +22,7 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       timeout-minutes: 20
-      run: npx playwright install chromium firefox webkit msedge
+      run: npx playwright install --with-deps chromium firefox webkit msedge
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4
