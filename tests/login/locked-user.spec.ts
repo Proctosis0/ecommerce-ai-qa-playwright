@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { submitLogin } from '../helpers/login';
 
 const MENSAJE_BLOQUEO = 'Epic sadface: Sorry, this user has been locked out.';
 
@@ -13,26 +14,19 @@ test.describe('Login de usuario bloqueado', () => {
       throw new Error('Faltan LOCKED_USER y/o LOCKED_PASSWORD en el archivo .env');
     }
 
-    // 2. Abrir la pagina de login (baseURL configurado en playwright.config.ts).
-    await page.goto('/');
-
-    // 3. Completar credenciales del usuario bloqueado.
-    await page.getByPlaceholder('Username').fill(usuario);
-    await page.getByPlaceholder('Password').fill(password);
-
-    // 4. Intentar iniciar sesion. SauceDemo valida en el cliente (sin peticion de red),
-    //    por lo que la respuesta de la aplicacion es el alert de error: lo esperamos.
-    await page.getByRole('button', { name: 'Login' }).click();
+    // 2. Intentar iniciar sesion con el usuario bloqueado. SauceDemo valida en el cliente
+    //    (sin peticion de red), por lo que la respuesta de la aplicacion es el alert de error.
+    await submitLogin(page, { username: usuario, password });
 
     const mensajeError = page.locator('[data-test="error"]');
     await mensajeError.waitFor({ state: 'visible' });
 
-    // 5. Validar que el mensaje de error se muestra y describe el bloqueo.
+    // 3. Validar que el mensaje de error se muestra y describe el bloqueo.
     await expect(mensajeError).toBeVisible();
     await expect(mensajeError).toContainText(MENSAJE_BLOQUEO);
     await expect(mensajeError).toContainText(/locked out/i);
 
-    // 6. Validar que permanece en la pagina de login y no accede al inventario.
+    // 4. Validar que permanece en la pagina de login y no accede al inventario.
     await expect(page).toHaveURL('https://www.saucedemo.com/');
     await expect(page).not.toHaveURL(/\/inventory\.html$/);
     await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
