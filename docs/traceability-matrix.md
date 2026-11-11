@@ -25,6 +25,19 @@ Result legend: ✅ passing · 🐞 known bug, documented with `test.fail()` (exp
 | E2E | TC-18 Login → add product → cart → price checked against API → logout | End-to-end | `tests/e2e/compra-completa.spec.ts` | ✅ |
 | Price API | TC-19 Valid product returns `200` and the correct price | API | `tests/api/producto.spec.ts` | ✅ |
 | Price API | TC-20 / BUG-04 Unknown product should return `404` (returns `200` + price `0`) | API defect | `tests/api/producto.spec.ts` | 🐞 |
+| Booking API – auth | TC-21 `POST /auth` with valid credentials returns a token (schema) | API | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – auth | TC-22 / BUG-05 Invalid credentials should return `401` | API defect | `tests/api/booking/booking.spec.ts` | 🐞 |
+| Booking API – CRUD | TC-23 `POST /booking` creates a booking and matches the contract | API / contract | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – CRUD | TC-24 `GET /booking/{id}` returns the created booking | API / contract | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – CRUD | TC-25 `GET /booking` lists ids and includes the new booking | API / contract | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – CRUD | TC-26 `PUT` with token updates all fields and changes persist | API | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – CRUD | TC-27 `PATCH` changes only the field sent | API | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – CRUD | TC-28 `DELETE` with token removes the booking (then `404`) | API | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – permissions | TC-29 `PUT` without token is rejected with `403` and data is unchanged | API / security | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – permissions | TC-30 `DELETE` without token is rejected with `403` and booking still exists | API / security | `tests/api/booking/booking.spec.ts` | ✅ |
+| Booking API – validation | TC-31 / BUG-06 Missing required fields should return `400` | API defect | `tests/api/booking/booking.spec.ts` | 🐞 |
+| Booking API – validation | TC-32 / BUG-07 Negative price and checkout before checkin should be rejected | API defect | `tests/api/booking/booking.spec.ts` | 🐞 |
+| Booking API – validation | TC-33 / BUG-08 Successful delete should return `200`/`204` | API defect | `tests/api/booking/booking.spec.ts` | 🐞 |
 
 ## Defect log
 
@@ -34,3 +47,9 @@ Result legend: ✅ passing · 🐞 known bug, documented with `test.fail()` (exp
 | BUG-02 | Products (problem_user) | Price sorting does nothing | List ordered by price, low to high | List order does not change | Medium |
 | BUG-03 | Checkout (problem_user) | Last name goes into the first name field | Last name stays in "Last Name" | Text is written into "First Name"; checkout cannot continue | High |
 | BUG-04 | Price API | Unknown product returns a price | `404` or error body | `200` + `{ "precio": 0 }` | High |
+| BUG-05 | Booking API | Invalid login returns 200 | `401 Unauthorized` | `200` + `{ "reason": "Bad credentials" }` | Medium |
+| BUG-06 | Booking API | Incomplete booking crashes the server | `400 Bad Request` | `500 Internal Server Error` | High |
+| BUG-07 | Booking API | Invalid booking data is accepted | `400` for negative price / checkout before checkin | `200`, booking created | High |
+| BUG-08 | Booking API | Wrong status code on delete | `200 OK` or `204 No Content` | `201 Created` | Low |
+
+Each defect is also filed as a GitHub Issue with steps, evidence, severity and priority. UI evidence: [`docs/bugs/`](bugs/).

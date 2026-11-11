@@ -70,3 +70,22 @@ export const resumenBackpack = {
 export const api = {
   producto: 'https://cursotesting.com.ar:3000/producto/',
 } as const;
+
+/** API publica de practica Restful-Booker (credenciales de demo publicadas en su documentacion). */
+export const bookingApi = {
+  baseUrl: process.env.BOOKING_API_URL ?? 'https://restful-booker.herokuapp.com',
+  admin: {
+    username: process.env.BOOKING_API_USER ?? 'admin',
+    password: process.env.BOOKING_API_PASSWORD ?? 'password123',
+  },
+} as const;
+
+/** Reserva valida usada como base en los tests (cada test crea la suya y la borra al final). */
+export const reservaValida = {
+  firstname: 'Jose',
+  lastname: 'Tester',
+  totalprice: 150,
+  depositpaid: true,
+  bookingdates: { checkin: '2026-12-01', checkout: '2026-12-05' },
+  additionalneeds: 'Breakfast',
+};

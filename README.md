@@ -2,7 +2,13 @@
 
 [![Playwright Tests](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/actions/workflows/playwright.yml/badge.svg)](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/actions/workflows/playwright.yml)
 
-**[▶ Live test report](https://proctosis0.github.io/ecommerce-ai-qa-playwright/)** (Playwright HTML report of the latest run on `main`) · **[Traceability matrix](docs/traceability-matrix.md)**
+**[▶ Live test report](https://proctosis0.github.io/ecommerce-ai-qa-playwright/)** (latest run on `main`) · **[Test plan](docs/test-plan.md)** · **[Traceability matrix](docs/traceability-matrix.md)** · **[Test summary report](docs/test-summary-report.md)** · **[Bug reports](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/issues)**
+
+## At a glance
+
+| Test cases designed | Automated tests | Passing | Defects found | Unexpected failures | Jira stories |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| 33 | 30 | 22 | 8 (4 High) | 0 | 4 |
 
 End-to-end and API test automation for the [SauceDemo](https://www.saucedemo.com) store, built with **Playwright + TypeScript** and an **AI-assisted workflow that connects Jira, Playwright and GitHub**.
 
@@ -13,8 +19,10 @@ A user story is read from Jira, an AI agent turns it into a Playwright test usin
 - **Jira → test → Jira loop** driven by MCP servers (Jira MCP + Playwright Test MCP) and AI coding agents (Claude Code / OpenCode).
 - **Page Object Model** in TypeScript, injected into tests through **Playwright fixtures**.
 - **UI and API coverage**, including a cross-check of the cart price against a REST API.
+- **REST API suite with contract validation**: authentication, full CRUD, token permissions and input validation on Restful-Booker, with responses checked against **Zod** schemas.
 - **Data-driven tests**: checkout form validations run from a table of cases in `data/test-data.ts`.
-- **4 defects found and documented** (API + `problem_user`), each with a failing-by-design test and a defect log (see [Defects found](#defects-found)).
+- **8 defects found and documented** (store + APIs), each with a GitHub Issue (steps, evidence, severity, priority) and a failing-by-design test (see [Defects found](#defects-found)).
+- **Full QA cycle documented**: [test plan](docs/test-plan.md) → test cases → execution → [summary report with go/no-go recommendation](docs/test-summary-report.md).
 - **Traceability**: every Jira story is linked to its test cases, spec and result in the [traceability matrix](docs/traceability-matrix.md).
 - **Login once, reuse the session** (`storageState` + setup project) so flow tests start already logged in.
 - **CI on every push** with GitHub Actions; the HTML report is published to **GitHub Pages**.
@@ -59,6 +67,7 @@ flowchart LR
 | Defects (Jira) | `tests/bugs/SCRUM-7-problem-user.spec.ts` | Three `problem_user` defects (images, sorting, checkout last name) documented as expected failures; Jira story SCRUM-7 |
 | E2E | `tests/e2e/compra-completa.spec.ts` | Login → add product → cart → price check against API → logout |
 | API | `tests/api/producto.spec.ts` | Price API: valid product and non-existent product |
+| API | `tests/api/booking/booking.spec.ts` | Restful-Booker: auth, CRUD, `403` without token, input validation, Zod contract (13 tests) |
 
 ## Defects found
 
@@ -68,6 +77,10 @@ flowchart LR
 | BUG-02 | Products (`problem_user`) | "Price (low to high)" sorts the list | The order does not change |
 | BUG-03 | Checkout (`problem_user`) | Last name stays in "Last Name" | It is written into "First Name"; checkout cannot continue |
 | BUG-04 | Price API | Unknown product returns `404` | Returns `200` + `{ "precio": 0 }` |
+| BUG-05 | Booking API | Invalid login returns `401` | Returns `200` + `{ "reason": "Bad credentials" }` |
+| BUG-06 | Booking API | Incomplete booking returns `400` | Returns `500 Internal Server Error` |
+| BUG-07 | Booking API | Negative price / checkout before checkin rejected | Accepted with `200`, booking created |
+| BUG-08 | Booking API | Successful delete returns `200`/`204` | Returns `201 Created` |
 
 Each defect has a test that asserts the **correct** behavior, marked with `test.fail()` and a `bug` annotation: the suite stays green while the defect exists and the report lists every bug. To make sure those tests fail *because of the bug* (and not because of a broken test), they were also run against `standard_user`, where all of them pass. Full details in the [defect log](docs/traceability-matrix.md#defect-log).
 
@@ -85,6 +98,7 @@ Returning a price of `0` for an unknown product could let a client treat a missi
 ## Tech stack
 
 - **Playwright Test** + **TypeScript** (strict mode)
+- **Zod** for API contract validation
 - **Page Object Model** + **fixtures** (`test.extend`)
 - **MCP servers**: Jira MCP, Playwright Test MCP
 - **AI coding agents**: Claude Code, OpenCode
@@ -100,11 +114,12 @@ data/auth.ts              Path of the saved login session
 tests/auth.setup.ts       Logs in once and saves the session (storageState)
 tests/fixtures.ts         test.extend() that injects the Page Objects
 tests/pages/              Page Objects: BasePage, LoginPage, ProductsPage, CartPage, CheckoutPage
-tests/api/                API helper (productoApi.ts) and API tests
+tests/api/                Price API helper and tests
+tests/api/booking/        Restful-Booker client, Zod schemas and API suite
 tests/e2e/                Full purchase flow
 tests/login|productos|carrito|checkout/   Feature tests
 tests/bugs/               Documented defects (expected failures)
-docs/                     Traceability matrix, defect log, screenshots
+docs/                     Test plan, traceability matrix, defect log, summary report, bug evidence
 tests/seed.spec.ts        Seed used by the AI test generator
 specs/                    Jira-driven prompts and test plans
 .claude/agents/           Playwright planner / generator / healer agents
@@ -149,6 +164,8 @@ cp .env.example .env
 | `SAUCE_LOCKED_PASSWORD` | `secret_sauce` |
 | `SAUCE_PROBLEM_USER` | `problem_user` |
 | `SAUCE_PROBLEM_PASSWORD` | `secret_sauce` |
+| `BOOKING_API_URL` | `https://restful-booker.herokuapp.com` |
+| `BOOKING_API_USER` / `BOOKING_API_PASSWORD` | `admin` / `password123` (public demo) |
 
 `.env` and the MCP configuration (`.mcp.json`, which holds the Jira and GitHub tokens) are git-ignored and never committed. In CI the variables come from the workflow or repository secrets.
 
@@ -160,6 +177,8 @@ cp .env.example .env
 - **Single source of test data**: base URL only in `playwright.config.ts`; products and API URL in `data/test-data.ts`.
 - **Video and traces only when needed**: `video: 'retain-on-failure'`, `trace: 'on-first-retry'`.
 - **Login once**: a `setup` project logs in and saves the session; the `chromium-logged-in` project (products, cart, checkout) reuses it, while login tests and other users run in a clean `chromium` project.
+- **Self-cleaning API tests**: a fixture creates each booking and deletes it after the test, so results never depend on the state of a shared public API.
+- **Contract as code**: Zod schemas use `.strict()`, so an unexpected or missing field breaks the test instead of passing silently.
 - **Data-driven over copy-paste**: one checkout test body runs for every invalid case in `data/test-data.ts`; adding a case is one line of data.
 
 ## Roadmap

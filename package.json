@@ -25,7 +25,8 @@
     "@playwright/test": "^1.65.0",
     "@rokealvo/jira-mcp": "^1.4.0",
     "@types/node": "^26.6.6",
-    "dotenv": "^18.0.10"
+    "dotenv": "^18.0.10",
+    "zod": "^3.25.76"
   },
   "dependencies": {
     "@playwright/mcp": "^0.0.85"
