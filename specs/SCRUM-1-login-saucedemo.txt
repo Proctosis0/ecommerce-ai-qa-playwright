@@ -1,0 +1,36 @@
+SCRUM-1: Login en Saucedemo
+Estado: Por hacer
+Sitio: https://www.saucedemo.com
+
+Pasos:
+1. Ingresar con el standard user en el campo User.
+2. Ingresar la password del standard user en el campo Password.
+3. Hacer click en Login.
+4. Validar que la URL sea /inventory.html al ingresar.
+5. Desloguear desde el menu de 3 lineas.
+
+==================================================
+PROMPT REUTILIZABLE (reemplazar <CLAVE> por la historia, ej: SCRUM-2)
+==================================================
+
+Usando el MCP de Jira, trae la historia <CLAVE> (titulo y descripcion).
+Con los pasos que indica la historia:
+1. Genera el test usando el MCP de Playwright (playwright-test), NO a mano:
+   usa el agente playwright-test-generator con tests/seed.spec.ts como seed.
+   El agente debe abrir el navegador real, recorrer los pasos de la historia
+   y tomar los selectores de la pagina. Guarda el test en
+   tests/<CLAVE>-<nombre-corto>.spec.ts (TypeScript, @playwright/test, un solo
+   test que cubra todos los pasos y valide lo que pida la historia).
+   Al terminar de generar el test, cierra el navegador del MCP
+   (browser_close) para que no quede ninguna ventana abierta.
+2. Ejecuta el test con:
+   npx playwright test tests/<CLAVE>-<nombre-corto>.spec.ts --project=chromium
+3. Si falla, analiza el error, corrige el test y vuelve a ejecutarlo hasta
+   que pase. Si no lo logras, NO cambies el estado de la historia y explicame
+   el problema.
+4. Si el resultado es OK, llama a get_transitions de <CLAVE> y pasa la
+   historia al estado final de la categoria "Listo" (en este Jira se llama
+   "Finalizado"). Agrega un comentario en la historia indicando el archivo
+   del test y que paso correctamente.
+5. Al final, resume: archivo creado, resultado de la ejecucion y estado
+   actual de la historia.

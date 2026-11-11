@@ -1,0 +1,19 @@
+{
+  "name": "testingjiragithubplaywright",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@rokealvo/jira-mcp": "^1.4.0",
+    "@types/node": "^26.6.6"
+  },
+  "dependencies": {
+    "@playwright/mcp": "^0.0.85"
+  }
+}
