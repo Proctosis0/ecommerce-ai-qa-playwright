@@ -2,11 +2,13 @@ import { test as base } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { CartPage } from './pages/CartPage';
+import { CheckoutPage } from './pages/CheckoutPage';
 
 interface PageObjects {
   loginPage: LoginPage;
   productsPage: ProductsPage;
   cartPage: CartPage;
+  checkoutPage: CheckoutPage;
 }
 
 /** `test` extendido con los Page Objects inyectados como fixtures. */
@@ -19,6 +21,9 @@ export const test = base.extend<PageObjects>({
   },
   cartPage: async ({ page }, use) => {
     await use(new CartPage(page));
+  },
+  checkoutPage: async ({ page }, use) => {
+    await use(new CheckoutPage(page));
   },
 });
 

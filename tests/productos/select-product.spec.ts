@@ -1,15 +1,14 @@
 import { test, expect } from '../fixtures';
-import { productos, usuarios } from '../../data/test-data';
+import { productos } from '../../data/test-data';
 
 const { backpack } = productos;
 
 test.describe('Seleccion de producto en Saucedemo', () => {
   test('Ver detalle de Sauce Labs Backpack, validar precio y agregarlo al carrito', async ({
     page,
-    loginPage,
     productsPage,
   }) => {
-    await loginPage.loginAs(usuarios.standard);
+    await productsPage.goto(); // sesion reutilizada (storageState)
 
     await productsPage.openProduct(backpack.nombre);
 

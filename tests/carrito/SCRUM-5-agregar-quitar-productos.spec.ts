@@ -1,7 +1,7 @@
 // spec: SCRUM-5
 // seed: tests/seed.spec.ts
 import { test, expect } from '../fixtures';
-import { productos, urls, usuarios } from '../../data/test-data';
+import { productos, urls } from '../../data/test-data';
 
 const { backpack, bikeLight } = productos;
 const BOTON_AGREGAR = 'Add to cart';
@@ -10,12 +10,11 @@ const BOTON_QUITAR = 'Remove';
 test.describe('SCRUM-5: Agregar y quitar productos del carrito', () => {
   test('agrega dos productos, valida el contador y los quita desde carrito y productos', async ({
     page,
-    loginPage,
     productsPage,
     cartPage,
   }) => {
-    await test.step('Ingresar con el standard user', async () => {
-      await loginPage.loginAs(usuarios.standard);
+    await test.step('Ingresar con el standard user (sesion reutilizada)', async () => {
+      await productsPage.goto(); // sesion reutilizada (storageState)
       await expect(page, 'Debe acceder al inventario tras el login').toHaveURL((url) => url.pathname === urls.inventory);
     });
 

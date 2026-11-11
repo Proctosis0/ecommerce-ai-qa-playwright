@@ -6,6 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 import dotenv from 'dotenv';
 import path from 'path';
+import { authFile } from './data/auth';
 dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true });
 
 /**
@@ -23,8 +24,8 @@ export default defineConfig({
   timeout: 30000,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* Reporte HTML (publicado en GitHub Pages desde la CI) + salida en consola */
+  reporter: [['html', { open: 'never' }], ['list']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -41,9 +42,23 @@ export default defineConfig({
   },
 
   projects: [
+    /* Inicia sesion una vez y guarda la sesion para los tests que la reutilizan */
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    /* Tests que prueban el login o usan otro usuario: arrancan sin sesion */
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: [/auth\.setup\.ts/, /tests[\\/](productos|carrito|checkout)[\\/]/],
+    },
+    /* Tests de flujo con standard_user: arrancan ya logueados (storageState) */
+    {
+      name: 'chromium-logged-in',
+      use: { ...devices['Desktop Chrome'], storageState: authFile },
+      testMatch: /tests[\\/](productos|carrito|checkout)[\\/].*\.spec\.ts/,
+      dependencies: ['setup'],
     },
   ],
 

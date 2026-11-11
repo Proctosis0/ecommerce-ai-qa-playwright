@@ -2,6 +2,8 @@
 
 [![Playwright Tests](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/actions/workflows/playwright.yml/badge.svg)](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/actions/workflows/playwright.yml)
 
+**[▶ Live test report](https://proctosis0.github.io/ecommerce-ai-qa-playwright/)** (Playwright HTML report of the latest run on `main`) · **[Traceability matrix](docs/traceability-matrix.md)**
+
 End-to-end and API test automation for the [SauceDemo](https://www.saucedemo.com) store, built with **Playwright + TypeScript** and an **AI-assisted workflow that connects Jira, Playwright and GitHub**.
 
 A user story is read from Jira, an AI agent turns it into a Playwright test using the real browser, the test runs, and the Jira story is moved to *Done* with a comment, all from one reusable prompt. Every push runs the full suite in GitHub Actions.
@@ -11,8 +13,11 @@ A user story is read from Jira, an AI agent turns it into a Playwright test usin
 - **Jira → test → Jira loop** driven by MCP servers (Jira MCP + Playwright Test MCP) and AI coding agents (Claude Code / OpenCode).
 - **Page Object Model** in TypeScript, injected into tests through **Playwright fixtures**.
 - **UI and API coverage**, including a cross-check of the cart price against a REST API.
-- **A real defect found and documented**: the price API returns `200 OK` for products that do not exist (see [Known bug](#known-bug-found-by-the-api-tests)).
-- **CI on every push** with GitHub Actions, HTML report uploaded as an artifact.
+- **Data-driven tests**: checkout form validations run from a table of cases in `data/test-data.ts`.
+- **4 defects found and documented** (API + `problem_user`), each with a failing-by-design test and a defect log (see [Defects found](#defects-found)).
+- **Traceability**: every Jira story is linked to its test cases, spec and result in the [traceability matrix](docs/traceability-matrix.md).
+- **Login once, reuse the session** (`storageState` + setup project) so flow tests start already logged in.
+- **CI on every push** with GitHub Actions; the HTML report is published to **GitHub Pages**.
 - Centralized test data, credentials from environment variables, `data-test` based selectors.
 
 ## How the AI workflow works
@@ -50,10 +55,23 @@ flowchart LR
 | Products | `tests/productos/select-product.spec.ts` | Product detail, price and add to cart |
 | Cart | `tests/carrito/verify-cart.spec.ts` | Cart contents, product name and price |
 | Cart (Jira) | `tests/carrito/SCRUM-5-agregar-quitar-productos.spec.ts` | Add two products, remove them from the cart and from the product list, cart badge updates; generated from Jira story SCRUM-5 |
+| Checkout (Jira) | `tests/checkout/SCRUM-6-checkout-validaciones.spec.ts` | Data-driven required-field errors (4 cases) and a full purchase checking subtotal, 8% tax and total; Jira story SCRUM-6 |
+| Defects (Jira) | `tests/bugs/SCRUM-7-problem-user.spec.ts` | Three `problem_user` defects (images, sorting, checkout last name) documented as expected failures; Jira story SCRUM-7 |
 | E2E | `tests/e2e/compra-completa.spec.ts` | Login → add product → cart → price check against API → logout |
 | API | `tests/api/producto.spec.ts` | Price API: valid product and non-existent product |
 
-## Known bug found by the API tests
+## Defects found
+
+| ID | Area | Expected | Actual |
+| --- | --- | --- | --- |
+| BUG-01 | Products (`problem_user`) | Each product shows its own image | All 6 products show the same image |
+| BUG-02 | Products (`problem_user`) | "Price (low to high)" sorts the list | The order does not change |
+| BUG-03 | Checkout (`problem_user`) | Last name stays in "Last Name" | It is written into "First Name"; checkout cannot continue |
+| BUG-04 | Price API | Unknown product returns `404` | Returns `200` + `{ "precio": 0 }` |
+
+Each defect has a test that asserts the **correct** behavior, marked with `test.fail()` and a `bug` annotation: the suite stays green while the defect exists and the report lists every bug. To make sure those tests fail *because of the bug* (and not because of a broken test), they were also run against `standard_user`, where all of them pass. Full details in the [defect log](docs/traceability-matrix.md#defect-log).
+
+### BUG-04 in detail: price API
 
 `POST https://cursotesting.com.ar:3000/producto/`
 
@@ -62,7 +80,7 @@ flowchart LR
 | `{ "nombre": "Sauce Labs Backpack" }` | `200` + `{ "precio": 29.99 }` | ✅ `200` + `{ "precio": 29.99 }` |
 | `{ "nombre": "Producto Inexistente" }` | `404` (or an error body) | ❌ `200` + `{ "precio": 0 }` |
 
-Returning a price of `0` for an unknown product could let a client treat a missing product as free. The negative test asserts the **correct** behavior and is marked with `test.fail()` plus a `bug` annotation, so the suite stays green while the defect is visible in the report. When the API is fixed, that test will be reported as "unexpectedly passed", which is the signal to remove the marker.
+Returning a price of `0` for an unknown product could let a client treat a missing product as free. When the API is fixed, the test will be reported as "unexpectedly passed", which is the signal to remove the marker.
 
 ## Tech stack
 
@@ -77,12 +95,16 @@ Returning a price of `0` for an unknown product could let a client treat a missi
 ## Project structure
 
 ```
-data/test-data.ts         Test data: users (from env), products, routes, API URL
-tests/fixtures.ts         test.extend() that injects loginPage, productsPage, cartPage
-tests/pages/              Page Objects: BasePage, LoginPage, ProductsPage, CartPage
+data/test-data.ts         Test data: users (from env), products, routes, checkout cases, API URL
+data/auth.ts              Path of the saved login session
+tests/auth.setup.ts       Logs in once and saves the session (storageState)
+tests/fixtures.ts         test.extend() that injects the Page Objects
+tests/pages/              Page Objects: BasePage, LoginPage, ProductsPage, CartPage, CheckoutPage
 tests/api/                API helper (productoApi.ts) and API tests
 tests/e2e/                Full purchase flow
-tests/login|productos|carrito/   Feature tests
+tests/login|productos|carrito|checkout/   Feature tests
+tests/bugs/               Documented defects (expected failures)
+docs/                     Traceability matrix, defect log, screenshots
 tests/seed.spec.ts        Seed used by the AI test generator
 specs/                    Jira-driven prompts and test plans
 .claude/agents/           Playwright planner / generator / healer agents
@@ -104,7 +126,8 @@ npm test
 | `npm test` | Full suite (Chromium) |
 | `npm run test:e2e` | E2E flow only |
 | `npm run test:api` | API tests only |
-| `npm run test:login` / `test:productos` / `test:carrito` | One feature area |
+| `npm run test:login` / `test:productos` / `test:carrito` / `test:checkout` | One feature area |
+| `npm run test:bugs` | Documented defects only |
 | `npm run test:headed` | Run with a visible browser |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run report` | Open the last HTML report |
@@ -124,6 +147,8 @@ cp .env.example .env
 | `SAUCE_PASSWORD` | `secret_sauce` |
 | `SAUCE_LOCKED_USER` | `locked_out_user` |
 | `SAUCE_LOCKED_PASSWORD` | `secret_sauce` |
+| `SAUCE_PROBLEM_USER` | `problem_user` |
+| `SAUCE_PROBLEM_PASSWORD` | `secret_sauce` |
 
 `.env` and the MCP configuration (`.mcp.json`, which holds the Jira and GitHub tokens) are git-ignored and never committed. In CI the variables come from the workflow or repository secrets.
 
@@ -134,11 +159,16 @@ cp .env.example .env
 - **Descriptive assertion messages** so a failure explains what was expected without reading the code.
 - **Single source of test data**: base URL only in `playwright.config.ts`; products and API URL in `data/test-data.ts`.
 - **Video and traces only when needed**: `video: 'retain-on-failure'`, `trace: 'on-first-retry'`.
+- **Login once**: a `setup` project logs in and saves the session; the `chromium-logged-in` project (products, cart, checkout) reuses it, while login tests and other users run in a clean `chromium` project.
+- **Data-driven over copy-paste**: one checkout test body runs for every invalid case in `data/test-data.ts`; adding a case is one line of data.
 
 ## Roadmap
 
 - [x] Cart add/remove flow through the AI loop (SCRUM-5)
-- [ ] More Jira stories through the AI loop (checkout form validation, product sorting)
+- [x] Checkout validations, data-driven (SCRUM-6)
+- [x] `problem_user` defects documented (SCRUM-7)
+- [x] HTML report published to GitHub Pages
+- [ ] Product sorting for `standard_user` through the AI loop
 - [ ] Visual and accessibility checks
 - [ ] Performance smoke test with JMeter
 

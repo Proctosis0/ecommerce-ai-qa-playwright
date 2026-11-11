@@ -4,6 +4,18 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+# Permisos minimos: leer el repo y publicar el reporte en GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Una sola publicacion de Pages a la vez; no se cancela una en curso
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   test:
     timeout-minutes: 30
@@ -19,6 +31,8 @@ jobs:
       SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD || 'secret_sauce' }}
       SAUCE_LOCKED_USER: ${{ secrets.SAUCE_LOCKED_USER || 'locked_out_user' }}
       SAUCE_LOCKED_PASSWORD: ${{ secrets.SAUCE_LOCKED_PASSWORD || 'secret_sauce' }}
+      SAUCE_PROBLEM_USER: ${{ secrets.SAUCE_PROBLEM_USER || 'problem_user' }}
+      SAUCE_PROBLEM_PASSWORD: ${{ secrets.SAUCE_PROBLEM_PASSWORD || 'secret_sauce' }}
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
@@ -31,3 +45,21 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+    # Artefacto para GitHub Pages (se publica en el job deploy-report)
+    - uses: actions/upload-pages-artifact@v3
+      if: ${{ !cancelled() && github.event_name == 'push' }}
+      with:
+        path: playwright-report/
+
+  deploy-report:
+    # Publica el reporte HTML del ultimo push, aunque algun test haya fallado
+    if: ${{ !cancelled() && github.event_name == 'push' }}
+    needs: test
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Deploy report to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

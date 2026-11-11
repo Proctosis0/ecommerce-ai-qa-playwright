@@ -1,16 +1,15 @@
 import { test, expect } from '../fixtures';
-import { productos, urls, usuarios } from '../../data/test-data';
+import { productos, urls } from '../../data/test-data';
 
 const { backpack } = productos;
 
 test.describe('Carrito en Saucedemo', () => {
   test('Agregar Sauce Labs Backpack y verificar nombre, precio y cantidad en el carrito', async ({
     page,
-    loginPage,
     productsPage,
     cartPage,
   }) => {
-    await loginPage.loginAs(usuarios.standard);
+    await productsPage.goto(); // sesion reutilizada (storageState)
 
     await expect(productsPage.productCard(backpack.nombre), 'La tarjeta del producto debe estar visible').toBeVisible();
     await expect(productsPage.productName(backpack.nombre), 'El nombre del producto debe coincidir').toHaveText(

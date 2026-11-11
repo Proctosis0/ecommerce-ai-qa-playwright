@@ -12,6 +12,8 @@
     "test:login": "playwright test tests/login",
     "test:productos": "playwright test tests/productos",
     "test:carrito": "playwright test tests/carrito",
+    "test:checkout": "playwright test tests/checkout",
+    "test:bugs": "playwright test tests/bugs",
     "report": "playwright show-report",
     "codegen": "playwright codegen https://www.saucedemo.com"
   },
