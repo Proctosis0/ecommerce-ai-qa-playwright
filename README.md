@@ -53,6 +53,32 @@ flowchart LR
 
 ![Jira story SCRUM-1 in Done status](docs/jira-scrum-1.png)
 
+### How the AI environment is organized
+
+Everything the agent needs lives in versioned files, so every run follows the same standard without relying on memory, and nothing that writes to Jira or GitHub happens without human approval.
+
+```
+.claude/
+├─ CLAUDE.md                 Steering: fixed project rules loaded every session
+│                            (POM, fixtures, data-test selectors, @SCRUM tags,
+│                             test.fail for bugs, no writes to Jira/GitHub without approval)
+├─ skills/
+│  ├─ test-desde-historia/   Jira story → Playwright test → run → close story + comment
+│  ├─ reportar-bug/          Defect → test.fail + Jira Bug (linked) + GitHub Issue + defect log
+│  └─ retest-y-cierre/       Re-run by tag (@SCRUM-n) and propose the status change
+├─ agents/                   Playwright planner / generator / healer
+└─ settings.json             Hook: type-check (tsc) after every file the agent edits
+.mcp.example.json            MCP servers: Playwright Test, Jira, GitHub (no secrets)
+```
+
+| Layer | Role |
+| --- | --- |
+| **MCP** | Connects the agent to the real tools: browser (Playwright), Jira and GitHub |
+| **Steering** (`CLAUDE.md`) | Conventions and safety rules, written once instead of repeated in every prompt |
+| **Skills** | One step-by-step procedure per QA flow; the agent picks the one that fits the task |
+| **Hooks** | Automatic checks on events: the code must compile after each edit |
+| **Human review** | I review and refactor every generated test, and approve every change in Jira/GitHub |
+
 ## Test coverage
 
 | Area | Spec | What it validates |
@@ -122,7 +148,8 @@ tests/bugs/               Documented defects (expected failures)
 docs/                     Test plan, traceability matrix, defect log, summary report, bug evidence
 tests/seed.spec.ts        Seed used by the AI test generator
 specs/                    Jira-driven prompts and test plans
-.claude/agents/           Playwright planner / generator / healer agents
+.claude/                  AI environment: steering (CLAUDE.md), skills, agents, hooks
+.mcp.example.json         MCP servers template (Playwright Test, Jira, GitHub)
 .github/workflows/        CI pipeline
 ```
 
