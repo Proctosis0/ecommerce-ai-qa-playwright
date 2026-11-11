@@ -14,17 +14,17 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.65.0-noble
       options: --user 1001
     env:
-      # Credenciales para tests con variables de entorno (.env no se versiona).
-      # Si defines los secrets en el repo, se usan esos; si no, valores publicos de la demo.
-      LOCKED_USER: ${{ secrets.LOCKED_USER || 'locked_out_user' }}
-      LOCKED_PASSWORD: ${{ secrets.LOCKED_PASSWORD || 'secret_sauce' }}
+      # Credenciales opcionales: si defines estos secrets se usan; si no, los valores publicos.
+      SAUCE_USER: ${{ secrets.SAUCE_USER || 'standard_user' }}
+      SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD || 'secret_sauce' }}
+      SAUCE_LOCKED_USER: ${{ secrets.SAUCE_LOCKED_USER || 'locked_out_user' }}
+      SAUCE_LOCKED_PASSWORD: ${{ secrets.SAUCE_LOCKED_PASSWORD || 'secret_sauce' }}
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
       run: npm ci
     - name: Run Playwright tests
-      # Edge no se puede instalar dentro del contenedor; se prueba solo en local.
-      run: npx playwright test --project=chromium --project=firefox --project=webkit
+      run: npm test
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

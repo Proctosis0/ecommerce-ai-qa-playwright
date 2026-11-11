@@ -7,6 +7,8 @@
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
+    "test:e2e": "playwright test tests/e2e",
+    "test:api": "playwright test tests/api",
     "test:login": "playwright test tests/login",
     "test:productos": "playwright test tests/productos",
     "test:carrito": "playwright test tests/carrito",
@@ -20,10 +22,10 @@
   "devDependencies": {
     "@playwright/test": "^1.65.0",
     "@rokealvo/jira-mcp": "^1.4.0",
-    "@types/node": "^26.6.6"
+    "@types/node": "^26.6.6",
+    "dotenv": "^18.0.10"
   },
   "dependencies": {
-    "@playwright/mcp": "^0.0.85",
-    "dotenv": "^18.0.10"
+    "@playwright/mcp": "^0.0.85"
   }
 }
