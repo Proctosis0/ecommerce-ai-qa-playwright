@@ -4,6 +4,7 @@ const MENSAJE_BLOQUEO = 'Epic sadface: Sorry, this user has been locked out.';
 
 test.describe('Login de usuario bloqueado', () => {
   test('locked_out_user no puede iniciar sesion y ve el mensaje de bloqueo', async ({ page }) => {
+    // Test: valida que locked_out_user es rechazado y ve el mensaje de bloqueo sin acceder al inventario.
     // 1. Credenciales exclusivamente desde .env (cargado en playwright.config.ts).
     const usuario = process.env.LOCKED_USER;
     const password = process.env.LOCKED_PASSWORD;

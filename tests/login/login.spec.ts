@@ -22,6 +22,7 @@ const { username, password } = testData.usuarios.standard;
 
 test.describe('Login en Saucedemo', () => {
   test('Login exitoso con standard_user y acceso al inventario', async ({ page }) => {
+    // Test: valida login exitoso con standard_user y acceso al listado de productos en /inventory.html.
     // 1. Abrir la pagina de login (baseURL configurado en playwright.config.ts).
     await page.goto('/');
 
