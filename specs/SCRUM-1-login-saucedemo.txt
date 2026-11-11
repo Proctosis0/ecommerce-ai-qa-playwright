@@ -18,19 +18,34 @@ Con los pasos que indica la historia:
 1. Genera el test usando el MCP de Playwright (playwright-test), NO a mano:
    usa el agente playwright-test-generator con tests/seed.spec.ts como seed.
    El agente debe abrir el navegador real, recorrer los pasos de la historia
-   y tomar los selectores de la pagina. Guarda el test en
-   tests/<CLAVE>-<nombre-corto>.spec.ts (TypeScript, @playwright/test, un solo
-   test que cubra todos los pasos y valide lo que pida la historia).
-   Al terminar de generar el test, cierra el navegador del MCP
-   (browser_close) para que no quede ninguna ventana abierta.
-2. Ejecuta el test con:
-   npx playwright test tests/<CLAVE>-<nombre-corto>.spec.ts --project=chromium
-3. Si falla, analiza el error, corrige el test y vuelve a ejecutarlo hasta
-   que pase. Si no lo logras, NO cambies el estado de la historia y explicame
-   el problema.
-4. Si el resultado es OK, llama a get_transitions de <CLAVE> y pasa la
-   historia al estado final de la categoria "Listo" (en este Jira se llama
-   "Finalizado"). Agrega un comentario en la historia indicando el archivo
-   del test y que paso correctamente.
-5. Al final, resume: archivo creado, resultado de la ejecucion y estado
-   actual de la historia.
+   y tomar los selectores de la pagina. Al terminar de generar el test, cierra
+   el navegador del MCP (browser_close) para que no quede ninguna ventana abierta.
+2. Adapta el test a las convenciones del proyecto:
+   - Guardalo en la carpeta de su area (tests/login/, tests/productos/,
+     tests/carrito/ o tests/e2e/) como <CLAVE>-<nombre-corto>.spec.ts.
+   - TypeScript; importa test y expect desde tests/fixtures.ts y usa los Page
+     Objects inyectados (loginPage, productsPage, cartPage). Si falta un metodo
+     o locator, agregalo al Page Object correspondiente, no en el spec.
+   - Datos (usuarios, productos, rutas) desde data/test-data.ts, nada fijo en el spec.
+   - Selectores con getByTestId (atributo data-test) y getByRole donde no haya data-test.
+   - Un test.step() por paso de la historia y un mensaje descriptivo en cada expect.
+3. Ejecuta el test con:
+   npx playwright test <ruta-del-test> --project=chromium
+   y despues la suite completa con: npx tsc --noEmit && npm test
+4. Si falla, analiza el error, corrige el test y vuelve a ejecutarlo hasta
+   que pase. Si no lo logras, NO cambies el estado de la historia, NO agregues
+   comentarios y explicame el problema.
+5. Si el resultado es OK, hace los DOS pasos siguientes en Jira (ambos obligatorios):
+   a) Llama a get_transitions de <CLAVE> y pasa la historia al estado final de
+      la categoria "Listo" (en este Jira se llama "Finalizado").
+   b) Llama a add_comment en <CLAVE> con este texto (completando los datos):
+      "Test automatizado: <ruta-del-test>
+       Resultado: PASSED (Playwright, chromium)
+       Fecha: <AAAA-MM-DD>
+       Generado con playwright-test-generator a partir de esta historia y
+       adaptado a Page Objects y fixtures del proyecto."
+   No termines hasta confirmar que a) y b) se ejecutaron correctamente; si
+   alguno falla, avisame cual y por que.
+6. No hagas commit. Al final, resume: archivo creado o modificado, Page Objects
+   tocados, resultado de la ejecucion, estado actual de la historia y si el
+   comentario quedo creado en Jira.

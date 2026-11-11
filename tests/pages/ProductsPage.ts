@@ -29,8 +29,18 @@ export class ProductsPage extends BasePage {
     return this.productCard(nombre).getByTestId('inventory-item-price');
   }
 
+  /** Boton de accion de la tarjeta: "Add to cart" o "Remove" segun el estado. */
+  productButton(nombre: string): Locator {
+    return this.productCard(nombre).locator('button');
+  }
+
   async addToCart(nombre: string): Promise<void> {
     await this.productCard(nombre).getByRole('button', { name: 'Add to cart' }).click();
+  }
+
+  /** Quita del carrito el producto indicado desde el listado de productos. */
+  async removeFromCart(nombre: string): Promise<void> {
+    await this.productCard(nombre).getByRole('button', { name: 'Remove' }).click();
   }
 
   /** Abre el detalle del producto haciendo clic sobre su nombre. */
