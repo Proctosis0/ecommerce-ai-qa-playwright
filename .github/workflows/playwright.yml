@@ -37,8 +37,9 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install dependencies
       run: npm ci
+    # El seed del generador de tests no es un caso de prueba: se excluye del reporte
     - name: Run Playwright tests
-      run: npm test
+      run: npx playwright test --grep-invert @seed
     # Historial de Allure: se baja el del ultimo reporte publicado (si existe)
     # para mostrar la tendencia entre ejecuciones.
     - name: Download Allure history
