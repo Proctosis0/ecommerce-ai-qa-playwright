@@ -1,6 +1,7 @@
 // spec: SCRUM-7
 import { test, expect } from '../fixtures';
 import { checkoutValido, productos, urls, usuarios } from '../../data/test-data';
+import { severity } from '../severity';
 
 /**
  * problem_user es un usuario de SauceDemo con defectos a proposito.
@@ -15,7 +16,7 @@ test.describe('SCRUM-7: Defectos detectados con problem_user', { tag: '@SCRUM-7'
     await expect(page, 'problem_user debe poder iniciar sesion').toHaveURL((url) => url.pathname === urls.inventory);
   });
 
-  test('BUG-01: cada producto debe mostrar su propia imagen', { tag: ['@bug', '@SCRUM-13'] }, async ({ productsPage }) => {
+  test('BUG-01: cada producto debe mostrar su propia imagen', { tag: ['@bug', '@SCRUM-13'], annotation: severity('normal') }, async ({ productsPage }) => {
     test.fail(true, 'Bug conocido de problem_user');
     test.info().annotations.push({
       type: 'bug',
@@ -28,7 +29,7 @@ test.describe('SCRUM-7: Defectos detectados con problem_user', { tag: '@SCRUM-7'
     expect(new Set(imagenes).size, 'Cada producto debe tener una imagen distinta').toBe(cantidadProductos);
   });
 
-  test('BUG-02: ordenar por precio (menor a mayor) debe ordenar el listado', { tag: ['@bug', '@SCRUM-14'] }, async ({ productsPage }) => {
+  test('BUG-02: ordenar por precio (menor a mayor) debe ordenar el listado', { tag: ['@bug', '@SCRUM-14'], annotation: severity('normal') }, async ({ productsPage }) => {
     test.fail(true, 'Bug conocido de problem_user');
     test.info().annotations.push({
       type: 'bug',
@@ -42,7 +43,7 @@ test.describe('SCRUM-7: Defectos detectados con problem_user', { tag: '@SCRUM-7'
     expect(precios, 'Los precios deben quedar ordenados de menor a mayor').toEqual(esperados);
   });
 
-  test('BUG-03: el apellido ingresado en el checkout debe quedar en su campo', { tag: ['@bug', '@SCRUM-15'] }, async ({
+  test('BUG-03: el apellido ingresado en el checkout debe quedar en su campo', { tag: ['@bug', '@SCRUM-15'], annotation: severity('critical') }, async ({
     page,
     productsPage,
     checkoutPage,

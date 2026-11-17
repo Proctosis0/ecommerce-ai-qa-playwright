@@ -1,9 +1,10 @@
 import { test, expect } from '../fixtures';
 import { productos } from '../../data/test-data';
 import { getPrecio } from './productoApi';
+import { severity } from '../severity';
 
 test.describe('API de productos', { tag: '@SCRUM-11' }, () => {
-  test('devuelve el precio de Sauce Labs Backpack', async ({ request }) => {
+  test('devuelve el precio de Sauce Labs Backpack', { annotation: severity('normal') }, async ({ request }) => {
     const respuesta = await getPrecio(request, productos.backpack.nombre);
 
     expect(respuesta.ok(), `La API debe responder OK (status ${respuesta.status()})`).toBeTruthy();
@@ -14,7 +15,7 @@ test.describe('API de productos', { tag: '@SCRUM-11' }, () => {
     expect(cuerpo.precio, 'El precio del producto debe ser 29.99').toBe(productos.backpack.precio);
   });
 
-  test('devuelve error para un producto inexistente', { tag: ['@bug', '@SCRUM-16'] }, async ({ request }) => {
+  test('devuelve error para un producto inexistente', { tag: ['@bug', '@SCRUM-16'], annotation: severity('critical') }, async ({ request }) => {
     test.fail(true, 'Bug: la API responde 200 con {"precio":0} para un producto inexistente');
     test.info().annotations.push({
       type: 'bug',

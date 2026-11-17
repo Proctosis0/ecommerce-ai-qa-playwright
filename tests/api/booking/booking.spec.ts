@@ -1,6 +1,7 @@
 import { test as base, expect } from '../../fixtures';
 import { bookingApi as config, reservaValida } from '../../../data/test-data';
 import { BookingApi } from './bookingApi';
+import { severity } from '../../severity';
 import {
   authResponseSchema,
   bookingIdListSchema,
@@ -36,7 +37,7 @@ const test = base.extend<{ api: BookingApi; token: string; nuevaReserva: (datos?
 });
 
 test.describe('API Restful-Booker: autenticacion', { tag: '@SCRUM-12' }, () => {
-  test('POST /auth con credenciales validas devuelve un token', async ({ api }) => {
+  test('POST /auth con credenciales validas devuelve un token', { annotation: severity('critical') }, async ({ api }) => {
     const res = await api.createToken(config.admin.username, config.admin.password);
 
     expect(res.status(), 'POST /auth debe responder 200').toBe(200);
@@ -44,7 +45,7 @@ test.describe('API Restful-Booker: autenticacion', { tag: '@SCRUM-12' }, () => {
     expect(authResponseSchema.safeParse(body).success, 'La respuesta debe cumplir el contrato { token }').toBe(true);
   });
 
-  test('BUG-05: POST /auth con credenciales invalidas debe responder 401', { tag: ['@bug', '@SCRUM-17'] }, async ({ api }) => {
+  test('BUG-05: POST /auth con credenciales invalidas debe responder 401', { tag: ['@bug', '@SCRUM-17'], annotation: severity('normal') }, async ({ api }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',
@@ -58,7 +59,7 @@ test.describe('API Restful-Booker: autenticacion', { tag: '@SCRUM-12' }, () => {
 });
 
 test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () => {
-  test('POST /booking crea una reserva y cumple el contrato', async ({ api, token }) => {
+  test('POST /booking crea una reserva y cumple el contrato', { annotation: severity('critical') }, async ({ api, token }) => {
     const res = await api.create(reservaValida);
 
     expect(res.status(), 'POST /booking debe responder 200').toBe(200);
@@ -70,7 +71,7 @@ test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () =
     await api.delete(body.bookingid, token);
   });
 
-  test('GET /booking/{id} devuelve la reserva creada', async ({ api, nuevaReserva }) => {
+  test('GET /booking/{id} devuelve la reserva creada', { annotation: severity('normal') }, async ({ api, nuevaReserva }) => {
     const id = await nuevaReserva();
 
     const res = await api.get(id);
@@ -81,7 +82,7 @@ test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () =
     expect(body, 'La reserva consultada debe ser igual a la creada').toEqual(reservaValida);
   });
 
-  test('GET /booking lista ids e incluye la reserva creada', async ({ api, nuevaReserva }) => {
+  test('GET /booking lista ids e incluye la reserva creada', { annotation: severity('normal') }, async ({ api, nuevaReserva }) => {
     const id = await nuevaReserva();
 
     const res = await api.list();
@@ -92,7 +93,7 @@ test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () =
     expect(body.map((b: { bookingid: number }) => b.bookingid), 'El listado debe incluir la reserva creada').toContain(id);
   });
 
-  test('PUT /booking/{id} con token actualiza todos los campos', async ({ api, token, nuevaReserva }) => {
+  test('PUT /booking/{id} con token actualiza todos los campos', { annotation: severity('normal') }, async ({ api, token, nuevaReserva }) => {
     const id = await nuevaReserva();
     const cambios: Booking = {
       ...reservaValida,
@@ -108,7 +109,7 @@ test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () =
     expect(await (await api.get(id)).json(), 'Los cambios deben persistir').toEqual(cambios);
   });
 
-  test('PATCH /booking/{id} modifica solo el campo enviado', async ({ api, token, nuevaReserva }) => {
+  test('PATCH /booking/{id} modifica solo el campo enviado', { annotation: severity('normal') }, async ({ api, token, nuevaReserva }) => {
     const id = await nuevaReserva();
 
     const res = await api.patch(id, { totalprice: 999 }, token);
@@ -117,7 +118,7 @@ test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () =
     expect(await res.json(), 'Solo debe cambiar totalprice').toEqual({ ...reservaValida, totalprice: 999 });
   });
 
-  test('DELETE /booking/{id} con token borra la reserva', async ({ api, token }) => {
+  test('DELETE /booking/{id} con token borra la reserva', { annotation: severity('normal') }, async ({ api, token }) => {
     const id = (await (await api.create(reservaValida)).json()).bookingid;
 
     await api.delete(id, token);
@@ -127,7 +128,7 @@ test.describe('API Restful-Booker: CRUD de reservas', { tag: '@SCRUM-12' }, () =
 });
 
 test.describe('API Restful-Booker: permisos', { tag: '@SCRUM-12' }, () => {
-  test('PUT sin token es rechazado con 403', async ({ api, nuevaReserva }) => {
+  test('PUT sin token es rechazado con 403', { annotation: severity('critical') }, async ({ api, nuevaReserva }) => {
     const id = await nuevaReserva();
 
     const res = await api.update(id, { ...reservaValida, lastname: 'Sin permiso' });
@@ -136,7 +137,7 @@ test.describe('API Restful-Booker: permisos', { tag: '@SCRUM-12' }, () => {
     expect((await (await api.get(id)).json()).lastname, 'La reserva no debe cambiar').toBe(reservaValida.lastname);
   });
 
-  test('DELETE sin token es rechazado con 403', async ({ api, nuevaReserva }) => {
+  test('DELETE sin token es rechazado con 403', { annotation: severity('critical') }, async ({ api, nuevaReserva }) => {
     const id = await nuevaReserva();
 
     const res = await api.delete(id);
@@ -147,7 +148,7 @@ test.describe('API Restful-Booker: permisos', { tag: '@SCRUM-12' }, () => {
 });
 
 test.describe('API Restful-Booker: defectos de validacion', { tag: '@SCRUM-12' }, () => {
-  test('BUG-06: crear una reserva sin campos obligatorios debe responder 400', { tag: ['@bug', '@SCRUM-18'] }, async ({ api }) => {
+  test('BUG-06: crear una reserva sin campos obligatorios debe responder 400', { tag: ['@bug', '@SCRUM-18'], annotation: severity('critical') }, async ({ api }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',
@@ -159,7 +160,7 @@ test.describe('API Restful-Booker: defectos de validacion', { tag: '@SCRUM-12' }
     expect(res.status(), 'Datos incompletos deben responder 400 Bad Request').toBe(400);
   });
 
-  test('BUG-07: no debe aceptar precio negativo ni salida anterior a la entrada', { tag: ['@bug', '@SCRUM-19'] }, async ({ api, token }) => {
+  test('BUG-07: no debe aceptar precio negativo ni salida anterior a la entrada', { tag: ['@bug', '@SCRUM-19'], annotation: severity('critical') }, async ({ api, token }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',
@@ -177,7 +178,7 @@ test.describe('API Restful-Booker: defectos de validacion', { tag: '@SCRUM-12' }
     expect(res.status(), 'Una reserva invalida debe ser rechazada con 400').toBe(400);
   });
 
-  test('BUG-08: DELETE exitoso debe responder 200 o 204, no 201', { tag: ['@bug', '@SCRUM-20'] }, async ({ api, token }) => {
+  test('BUG-08: DELETE exitoso debe responder 200 o 204, no 201', { tag: ['@bug', '@SCRUM-20'], annotation: severity('minor') }, async ({ api, token }) => {
     test.fail(true, 'Bug conocido de Restful-Booker');
     test.info().annotations.push({
       type: 'bug',

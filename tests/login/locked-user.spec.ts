@@ -1,10 +1,11 @@
 import { test, expect } from '../fixtures';
 import { usuarios } from '../../data/test-data';
+import { severity } from '../severity';
 
 const MENSAJE_BLOQUEO = 'Epic sadface: Sorry, this user has been locked out.';
 
 test.describe('Login de usuario bloqueado', { tag: '@SCRUM-1' }, () => {
-  test('locked_out_user no puede iniciar sesion y ve el mensaje de bloqueo', async ({ page, loginPage }) => {
+  test('locked_out_user no puede iniciar sesion y ve el mensaje de bloqueo', { annotation: severity('normal') }, async ({ page, loginPage }) => {
     await loginPage.loginAs(usuarios.locked);
 
     await expect(loginPage.errorMessage, 'Debe mostrarse el mensaje de error').toBeVisible();

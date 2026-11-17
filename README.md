@@ -217,6 +217,7 @@ cp .env.example .env
 - [x] `problem_user` defects documented (SCRUM-7)
 - [x] HTML report published to GitHub Pages
 - [x] Allure report with dashboard and run history
+- [x] Severity per test (blocker / critical / normal / minor), based on business impact
 - [ ] Product sorting for `standard_user` through the AI loop
 - [ ] Visual and accessibility checks
 - [ ] Performance smoke test with JMeter

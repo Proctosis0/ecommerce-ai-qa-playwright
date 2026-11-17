@@ -1,6 +1,7 @@
 // spec: SCRUM-6
 import { test, expect } from '../fixtures';
 import { checkoutInvalido, checkoutValido, productos, resumenBackpack, urls } from '../../data/test-data';
+import { severity } from '../severity';
 
 const { backpack } = productos;
 
@@ -20,7 +21,7 @@ test.describe('SCRUM-6: Checkout - validaciones del formulario y compra completa
 
   // Data-driven: un test por cada combinacion invalida definida en test-data.ts
   for (const datos of checkoutInvalido) {
-    test(`muestra error con ${datos.caso}`, async ({ page, checkoutPage }) => {
+    test(`muestra error con ${datos.caso}`, { annotation: severity('normal') }, async ({ page, checkoutPage }) => {
       await test.step('Completar el formulario con un campo obligatorio vacio', async () => {
         await checkoutPage.fillInfo(datos.nombre, datos.apellido, datos.codigoPostal);
         await checkoutPage.continue();
@@ -35,7 +36,7 @@ test.describe('SCRUM-6: Checkout - validaciones del formulario y compra completa
     });
   }
 
-  test('completa la compra con datos validos y valida el resumen', async ({ page, checkoutPage }) => {
+  test('completa la compra con datos validos y valida el resumen', { annotation: severity('critical') }, async ({ page, checkoutPage }) => {
     await test.step('Completar los datos del comprador', async () => {
       await checkoutPage.fillInfo(checkoutValido.nombre, checkoutValido.apellido, checkoutValido.codigoPostal);
       await checkoutPage.continue();

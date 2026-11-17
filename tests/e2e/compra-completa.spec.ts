@@ -1,11 +1,12 @@
 import { test, expect } from '../fixtures';
 import { productos, urls, usuarios } from '../../data/test-data';
 import { getPrecio } from '../api/productoApi';
+import { severity } from '../severity';
 
 const { backpack } = productos;
 
 test.describe('Compra completa en Saucedemo', { tag: '@SCRUM-11' }, () => {
-  test('Flujo E2E: login, producto, carrito, precio por API y logout', async ({
+  test('Flujo E2E: login, producto, carrito, precio por API y logout', { annotation: severity('critical') }, async ({
     page,
     request,
     loginPage,

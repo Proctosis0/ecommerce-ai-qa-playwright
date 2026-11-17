@@ -1,8 +1,9 @@
 import { test, expect } from '../fixtures';
 import { urls, usuarios } from '../../data/test-data';
+import { severity } from '../severity';
 
 test.describe('Login en Saucedemo', { tag: '@SCRUM-1' }, () => {
-  test('Login exitoso con standard_user y acceso al inventario', async ({ page, loginPage, productsPage }) => {
+  test('Login exitoso con standard_user y acceso al inventario', { annotation: severity('blocker') }, async ({ page, loginPage, productsPage }) => {
     await loginPage.loginAs(usuarios.standard);
 
     await expect(page, 'Debe acceder al inventario tras el login').toHaveURL(

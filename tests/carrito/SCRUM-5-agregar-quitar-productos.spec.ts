@@ -2,13 +2,14 @@
 // seed: tests/seed.spec.ts
 import { test, expect } from '../fixtures';
 import { productos, urls } from '../../data/test-data';
+import { severity } from '../severity';
 
 const { backpack, bikeLight } = productos;
 const BOTON_AGREGAR = 'Add to cart';
 const BOTON_QUITAR = 'Remove';
 
 test.describe('SCRUM-5: Agregar y quitar productos del carrito', { tag: '@SCRUM-5' }, () => {
-  test('agrega dos productos, valida el contador y los quita desde carrito y productos', async ({
+  test('agrega dos productos, valida el contador y los quita desde carrito y productos', { annotation: severity('critical') }, async ({
     page,
     productsPage,
     cartPage,

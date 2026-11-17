@@ -1,10 +1,11 @@
 import { test, expect } from '../fixtures';
 import { productos } from '../../data/test-data';
+import { severity } from '../severity';
 
 const { backpack } = productos;
 
 test.describe('Seleccion de producto en Saucedemo', { tag: '@SCRUM-10' }, () => {
-  test('Ver detalle de Sauce Labs Backpack, validar precio y agregarlo al carrito', async ({
+  test('Ver detalle de Sauce Labs Backpack, validar precio y agregarlo al carrito', { annotation: severity('normal') }, async ({
     page,
     productsPage,
   }) => {
