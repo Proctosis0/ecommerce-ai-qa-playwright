@@ -1,4 +1,4 @@
-﻿name: Playwright Tests
+name: Playwright Tests
 on:
   push:
     branches: [ main, master ]
@@ -39,20 +39,31 @@ jobs:
       run: npm ci
     - name: Run Playwright tests
       run: npm test
+    # Historial de Allure: se baja el del ultimo reporte publicado (si existe)
+    # para mostrar la tendencia entre ejecuciones.
+    - name: Download Allure history
+      if: ${{ !cancelled() }}
+      run: curl -fsSL "https://proctosis0.github.io/ecommerce-ai-qa-playwright/history.jsonl" -o history.jsonl || echo "Sin historial previo"
+    - name: Generate Allure report
+      if: ${{ !cancelled() }}
+      run: |
+        npx allure generate ./allure-results
+        cp history.jsonl allure-report/history.jsonl
+        cp -r playwright-report allure-report/playwright
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
-        path: playwright-report/
+        name: test-reports
+        path: allure-report/
         retention-days: 30
-    # Artefacto para GitHub Pages (se publica en el job deploy-report)
+    # Artefacto para GitHub Pages: Allure en la raiz y el reporte de Playwright en /playwright
     - uses: actions/upload-pages-artifact@v3
       if: ${{ !cancelled() && github.event_name == 'push' }}
       with:
-        path: playwright-report/
+        path: allure-report/
 
   deploy-report:
-    # Publica el reporte HTML del ultimo push, aunque algun test haya fallado
+    # Publica los reportes (Allure + Playwright) del ultimo push, aunque algun test haya fallado
     if: ${{ !cancelled() && github.event_name == 'push' }}
     needs: test
     runs-on: ubuntu-24.04

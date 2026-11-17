@@ -13,3 +13,6 @@ node_modules/
 
 # Variables de entorno (credenciales locales)
 .env
+allure-results/
+allure-report/
+history.jsonl

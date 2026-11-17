@@ -15,6 +15,7 @@
     "test:checkout": "playwright test tests/checkout",
     "test:bugs": "playwright test tests/bugs",
     "report": "playwright show-report",
+    "allure": "allure generate ./allure-results --open",
     "codegen": "playwright codegen https://www.saucedemo.com"
   },
   "keywords": [],
@@ -25,6 +26,8 @@
     "@playwright/test": "^1.65.0",
     "@rokealvo/jira-mcp": "^1.4.0",
     "@types/node": "^26.6.6",
+    "allure": "^3.33.0",
+    "allure-playwright": "^3.15.0",
     "dotenv": "^18.0.10",
     "zod": "^3.25.76"
   },

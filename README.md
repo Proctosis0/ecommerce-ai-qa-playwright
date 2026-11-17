@@ -2,7 +2,7 @@
 
 [![Playwright Tests](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/actions/workflows/playwright.yml/badge.svg)](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/actions/workflows/playwright.yml)
 
-**[▶ Live test report](https://proctosis0.github.io/ecommerce-ai-qa-playwright/)** (latest run on `main`) · **[Test plan](docs/test-plan.md)** · **[Traceability matrix](docs/traceability-matrix.md)** · **[Test summary report](docs/test-summary-report.md)** · **[Bug reports](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/issues)**
+**[▶ Live Allure report](https://proctosis0.github.io/ecommerce-ai-qa-playwright/)** (dashboard + run history) · **[Playwright HTML report](https://proctosis0.github.io/ecommerce-ai-qa-playwright/playwright/)** (latest run on `main`) · **[Test plan](docs/test-plan.md)** · **[Traceability matrix](docs/traceability-matrix.md)** · **[Test summary report](docs/test-summary-report.md)** · **[Bug reports](https://github.com/Proctosis0/ecommerce-ai-qa-playwright/issues)**
 
 ## At a glance
 
@@ -25,7 +25,7 @@ A user story is read from Jira, an AI agent turns it into a Playwright test usin
 - **Full QA cycle documented**: [test plan](docs/test-plan.md) → test cases → execution → [summary report with go/no-go recommendation](docs/test-summary-report.md).
 - **Traceability like a real team**: Jira epics → stories with acceptance criteria → test cases; defects as Jira *Bug* items linked to their story. Every test carries its Jira key as a Playwright tag (`@SCRUM-n`), so any story can be re-tested on its own. Details in the [traceability matrix](docs/traceability-matrix.md).
 - **Login once, reuse the session** (`storageState` + setup project) so flow tests start already logged in.
-- **CI on every push** with GitHub Actions; the HTML report is published to **GitHub Pages**.
+- **CI on every push** with GitHub Actions; an **Allure report** (status dashboard, trend across runs) and the Playwright HTML report are published to **GitHub Pages**.
 - Centralized test data, credentials from environment variables, `data-test` based selectors.
 
 ## How the AI workflow works
@@ -174,6 +174,7 @@ npm test
 | `npm run test:headed` | Run with a visible browser |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run report` | Open the last HTML report |
+| `npm run allure` | Generate and open the Allure report locally |
 | `npm run codegen` | Record a new flow with Playwright codegen |
 
 ### Environment variables
@@ -215,6 +216,7 @@ cp .env.example .env
 - [x] Checkout validations, data-driven (SCRUM-6)
 - [x] `problem_user` defects documented (SCRUM-7)
 - [x] HTML report published to GitHub Pages
+- [x] Allure report with dashboard and run history
 - [ ] Product sorting for `standard_user` through the AI loop
 - [ ] Visual and accessibility checks
 - [ ] Performance smoke test with JMeter
