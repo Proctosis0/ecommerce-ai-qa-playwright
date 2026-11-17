@@ -4,6 +4,11 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  # Regresion nocturna: corre toda la suite cada dia a las 06:00 (Argentina)
+  schedule:
+    - cron: '0 9 * * *'
+  # Ejecucion manual desde la pestana Actions ("Run workflow")
+  workflow_dispatch:
 
 # Permisos minimos: leer el repo y publicar el reporte en GitHub Pages
 permissions:
@@ -59,13 +64,13 @@ jobs:
         retention-days: 30
     # Artefacto para GitHub Pages: Allure en la raiz y el reporte de Playwright en /playwright
     - uses: actions/upload-pages-artifact@v3
-      if: ${{ !cancelled() && github.event_name == 'push' }}
+      if: ${{ !cancelled() && github.event_name != 'pull_request' }}
       with:
         path: allure-report/
 
   deploy-report:
     # Publica los reportes (Allure + Playwright) del ultimo push, aunque algun test haya fallado
-    if: ${{ !cancelled() && github.event_name == 'push' }}
+    if: ${{ !cancelled() && github.event_name != 'pull_request' }}
     needs: test
     runs-on: ubuntu-24.04
     environment:

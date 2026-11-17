@@ -25,7 +25,7 @@ A user story is read from Jira, an AI agent turns it into a Playwright test usin
 - **Full QA cycle documented**: [test plan](docs/test-plan.md) → test cases → execution → [summary report with go/no-go recommendation](docs/test-summary-report.md).
 - **Traceability like a real team**: Jira epics → stories with acceptance criteria → test cases; defects as Jira *Bug* items linked to their story. Every test carries its Jira key as a Playwright tag (`@SCRUM-n`), so any story can be re-tested on its own. Details in the [traceability matrix](docs/traceability-matrix.md).
 - **Login once, reuse the session** (`storageState` + setup project) so flow tests start already logged in.
-- **CI on every push** with GitHub Actions; an **Allure report** (status dashboard, trend across runs) and the Playwright HTML report are published to **GitHub Pages**.
+- **CI on every push and a nightly regression run** with GitHub Actions; an **Allure report** (status dashboard, trend across runs) and the Playwright HTML report are published to **GitHub Pages**.
 - Centralized test data, credentials from environment variables, `data-test` based selectors.
 
 ## How the AI workflow works
